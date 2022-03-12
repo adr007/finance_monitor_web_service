@@ -44,6 +44,7 @@ class TransactionController extends Controller
             'trans_id_user' => $request->user()->user_id,
             'trans_id_sub_asset' => $request->trans_id_sub_asset,
             'trans_value' => $request->trans_value,
+            'trans_tipe' => @$request->trans_tipe,
             'trans_status' => $request->trans_status,
             'trans_information' => $request->trans_information,
             'trans_date' => $request->trans_date,

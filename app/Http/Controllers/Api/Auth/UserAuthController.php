@@ -41,7 +41,7 @@ class UserAuthController extends Controller
                 'user_name' => $request->user_name,
                 'user_email' => $request->email,
                 'user_tlp' => '',
-                'user_photo' => "https://www.insoft.co.id/wp-content/uploads/2014/05/default-user-image.png",
+                'user_photo' => "https://i.ibb.co/wyYHccH/user-2.png",
                 'password' => Hash::make($request->password),
             ]);
             $token = $user->createToken('token')->plainTextToken;
@@ -57,7 +57,11 @@ class UserAuthController extends Controller
 
     public function gasLogout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        // Revoke a specific token...
+        // $request->user()->tokens()->delete();
+        
+        $request->user()->currentAccessToken()->delete();
+
         return response()->json(['status' => true, 'msg' => "Logout Success"]);
     }
 }
