@@ -24,6 +24,11 @@ class Transaction extends Model
         return $this->belongsTo(SubAsset::class, 'trans_id_sub_asset', 'sub_id');
     }
 
+    public function tag()
+    {
+        return $this->belongsTo(Tag::class, 'trans_tag', 'tag_kode');
+    }
+
     public static function getAllByUserJoinSubAssets($user_id)
     {
         return self::leftJoin('sub_assets', 'transactions.trans_id_sub_asset', '=', 'sub_assets.sub_id')

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{Transaction};
+use App\Models\{Transaction, User};
 use Illuminate\Support\Facades\Auth;
 // use Utils;
 
@@ -12,7 +12,7 @@ class PagesController extends Controller
 {
     public function dashboard()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->user_id);
 
         if (isset($_GET['bulan'])) {
             $bulan = $_GET['bulan'];
@@ -59,6 +59,8 @@ class PagesController extends Controller
                                     ->where('trans_status', "DOWN")->orderBy('trans_date', 'DESC')->get();
 
         $data['monthSaved'] = $data['thisMonth']['income'] - $data['thisMonth']['spending'];
+
+        $data['totalAssets'] = $user->subAssets()->sum('sub_value');
 
         return view('app.dashboard', $data);
     }

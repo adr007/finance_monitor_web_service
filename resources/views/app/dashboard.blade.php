@@ -16,7 +16,7 @@
 @section('body')
 <form action="{{ route('user.dashboard') }}" method="GET">
 <div class="row mb-2">
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
@@ -52,6 +52,20 @@
         </div>
       </div>
     </div>
+    <div class="col-lg-4 mb-2">
+      <div class="card bg-success text-white shadow">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-12">
+              Total Assets
+            </div>
+            <div class="col-md-12 text-right">
+              <h4 style="font-size: 18pt"><i class="far fa-gem"></i> @mataUang($totalAssets)</h4>
+            </div>
+          </div>          
+        </div>
+      </div>
+    </div>
 
     @php
         $persen = ($monthSaved/$thisMonth['income']) * 100;
@@ -66,35 +80,35 @@
           $text2 = "You Save";
         }
     @endphp
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="card border-left-{{ $warna }} shadow py-2" style="background-color: {{ $color }};">
         <div class="card-body">
           <div class="row no-gutters align-items-center">
-            <div class="col-md-11 col-xs-12">
-              <div class="text-xs font-weight-bold text-{{ $warna }} text-uppercase mb-1">{{ $text2 }}</div>
+            <div class="col-md-12 col-xs-12">
+              <div class="text-xs font-weight-bold text-{{ $warna }} text-uppercase mb-1">This Month {{ $text2 }}</div>
               <div class="row no-gutters align-items-center">
-                <div class="col-md-3">
+                <div class="col-md-5">
                   <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
                     {{ round($persen, 2) }} %
                   </div>
                 </div>
-                <div class="col-md-4">
-                  <div class="progress progress-sm mr-2">
-                    <div class="progress-bar bg-{{ $warna }}" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                  </div>
-                </div>
-                <div class="col-md-5 text-right">
+                
+                <div class="col-md-7 text-right">
                   <div class="h5 mb-0 font-weight-bold text-gray-800">@mataUang($monthSaved)</div>
+                </div>
+                <div class="col-md-12">
+                  <div class="progress progress-sm mr-2">
+                    <div class="progress-bar bg-{{ $warna }}" role="progressbar" style="width: {{ round($persen, 2) }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-1 col-xs-12 text-right">
-              <i class="far fa-check-circle fa-2x text-gray-300"></i>
-            </div>
+            
           </div>
         </div>
       </div>
     </div>
+    
   </div>
 </form>
 

@@ -40,11 +40,17 @@ class TransactionController extends Controller
 
     public function createTransaction(Request $request)
     {
+        if(@$request->trans_tag) {
+            $trans_tag = $request->trans_tag;
+        } else {
+            $trans_tag = 100;
+        }
+        
         $result = Transaction::create([
             'trans_id_user' => $request->user()->user_id,
             'trans_id_sub_asset' => $request->trans_id_sub_asset,
             'trans_value' => $request->trans_value,
-            'trans_tipe' => @$request->trans_tipe,
+            'trans_tag' => $trans_tag,
             'trans_status' => $request->trans_status,
             'trans_information' => $request->trans_information,
             'trans_date' => $request->trans_date,
