@@ -11,22 +11,29 @@ class UserAuthController extends Controller
 {
     public function gasLogin(Request $request)
     {
-        $user = User::where('user_email', $request->email)->first();
-        if ($user) {
-            if (!Hash::check($request->password, $user->password)) {
-                return response()->json(['status' => false, 'msg' => "Wrong Password"]);
-            } else {
-                $token = $user->createToken('token')->plainTextToken;
-                return response()->json([
-                    'status' => true, 
-                    'msg' => "Login Success",
-                    'token' => $token, 
-                    'user' => $user,
-                ]);
+        if(@$request->email && @$request->password) {
+            $user = User::where('user_email', $request->email)->first();
+            if ($user) {
+                if (!Hash::check($request->password, $user->password)) {
+                    return response()->json(['status' => false, 'msg' => "Wrong Password"]);
+                } else {
+                    $token = $user->createToken('token')->plainTextToken;
+                    return response()->json([
+                        'status' => true, 
+                        'msg' => "Login Success",
+                        'token' => $token, 
+                        'user' => $user,
+                    ]);
+                }
             }
-        }
-        else{
-            return response()->json(['status' => false, 'msg' => "Email not registered"]);
+            else{
+                return response()->json(['status' => false, 'msg' => "Email not registered"]);
+            }
+        } else {
+            return response()->json([
+                'status' => false, 
+                'msg' => "Isi form yang kosong",
+            ]);
         }
     }
 
@@ -60,7 +67,9 @@ class UserAuthController extends Controller
         // Revoke a specific token...
         // $request->user()->tokens()->delete();
         
-        $request->user()->currentAccessToken()->delete();
+        if(@$request->user()) {
+            $request->user()->currentAccessToken()->delete();
+        }
 
         return response()->json(['status' => true, 'msg' => "Logout Success"]);
     }

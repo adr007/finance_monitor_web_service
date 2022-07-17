@@ -58,15 +58,15 @@
         Finance Data
       </div>
 
-      <li class="nav-item" id="mn2">
+      {{-- <li class="nav-item" id="mn2">
         <a class="nav-link" href="#">
           <i class="fas fa-fw fa-table"></i>
           <span>Assets</span></a>
-      </li>
+      </li> --}}
 
       <!-- Nav Item - Charts -->
       <li class="nav-item" id="mn3">
-        <a class="nav-link" href="charts.html">
+        <a class="nav-link" href="{{ route('user.transaction') }}">
           <i class="fas fa-fw fa-chart-area"></i>
           <span>Transaction</span></a>
       </li>
@@ -88,13 +88,13 @@
 
       
 
-      <!-- Divider -->
+      {{-- <!-- Divider -->
       <hr class="sidebar-divider">
 
       <!-- Heading -->
       <div class="sidebar-heading">
         Addons
-      </div>
+      </div> --}}
 
       <!-- Nav Item - Pages Collapse Menu -->
       {{-- <li class="nav-item ">

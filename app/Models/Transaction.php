@@ -36,6 +36,7 @@ class Transaction extends Model
         ->where('transactions.trans_id_user', $user_id)
         ->whereYear('transactions.created_time', date('Y'))
         ->whereMonth('transactions.created_time', date('m'))
+        ->with('tag')
         ->orderBy('transactions.trans_date', 'DESC')->orderBy('transactions.trans_value', 'DESC');
     }
 }

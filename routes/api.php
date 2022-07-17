@@ -18,6 +18,7 @@ Route::get('/please-login', function(){
 
 Route::post('/login', [UserAuthController::class, 'gasLogin']);
 Route::post('/register', [UserAuthController::class, 'gasRegis']);
+Route::post('/force-logout', [UserAuthController::class, 'gasLogout']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [UserAuthController::class, 'gasLogout']);

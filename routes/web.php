@@ -26,5 +26,6 @@ Route::post('/logout/web', [UserAuthController::class, 'gasLogout'])->name('web.
 Route::middleware('auth')->group(function () {
     Route::prefix('/user')->group(function () {
         Route::get('/dashboard', [PagesController::class, 'dashboard'])->name('user.dashboard');
+        Route::get('/transaction', [PagesController::class, 'transaction'])->name('user.transaction');
     });
 });

@@ -31,25 +31,25 @@ class AssetsController extends Controller
 
         $data['detail'] = $sendSum;
 
-        $data['todayIncome'] = Transaction::where('trans_id_user', $user->user_id)
+        $data['todayIncome'] = (Transaction::where('trans_id_user', $user->user_id)
                                     ->whereDate('trans_date', date('Y-m-d'))
-                                    ->where('trans_status', "UP")->sum('trans_value');
+                                    ->where('trans_status', "UP")->sum('trans_value')) + 0;
 
-        $data['todaySpending'] = Transaction::where('trans_id_user', $user->user_id)
+        $data['todaySpending'] = (Transaction::where('trans_id_user', $user->user_id)
                                     ->whereDate('trans_date', date('Y-m-d'))
-                                    ->where('trans_status', "DOWN")->sum('trans_value');
+                                    ->where('trans_status', "DOWN")->sum('trans_value')) + 0;
 
-        $data['thisMonth']['Income'] = Transaction::where('trans_id_user', $user->user_id)
+        $data['thisMonth']['Income'] = (Transaction::where('trans_id_user', $user->user_id)
                                     ->whereMonth('trans_date', $bulan)
                                     ->whereYear('trans_date', $tahun)
-                                    ->where('trans_status', "UP")->sum('trans_value');
+                                    ->where('trans_status', "UP")->sum('trans_value')) + 0;
 
-        $data['thisMonth']['Spending'] = Transaction::where('trans_id_user', $user->user_id)
+        $data['thisMonth']['Spending'] = (Transaction::where('trans_id_user', $user->user_id)
                                     ->whereMonth('trans_date', $bulan)
                                     ->whereYear('trans_date', $tahun)
-                                    ->where('trans_status', "DOWN")->sum('trans_value');
+                                    ->where('trans_status', "DOWN")->sum('trans_value')) + 0;
 
-        $data['thisMonth']['Saving'] = $data['thisMonth']['Income'] - $data['thisMonth']['Spending'];
+        $data['thisMonth']['Saving'] = ($data['thisMonth']['Income'] - $data['thisMonth']['Spending']) + 0;
 
         return response()->json([
             'status' => true,
@@ -111,7 +111,8 @@ class AssetsController extends Controller
                 'msg' => 'Access Denied',
             ]);
         }
-
+        
+        $res->sub_id_asset = $request->sub_id_asset;
         $res->sub_name = $request->sub_name;
         $res->sub_vendor = $request->sub_vendor;
         $res->sub_value = $request->sub_value;
