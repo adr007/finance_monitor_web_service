@@ -27,31 +27,31 @@ class PagesController extends Controller
 
         $data['today']['income'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereDate('trans_date', date('Y-m-d'))
-            ->where('trans_status', "UP")->sum('trans_value');
+            ->where('trans_status', "UP")->sum('trans_value') ?? 0;
 
         $data['today']['spending'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereDate('trans_date', date('Y-m-d'))
-            ->where('trans_status', "DOWN")->sum('trans_value');
+            ->where('trans_status', "DOWN")->sum('trans_value') ?? 0;
 
         $data['thisMonth']['income'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereMonth('trans_date', $bulan)
             ->whereYear('trans_date', $tahun)
-            ->where('trans_status', "UP")->sum('trans_value');
+            ->where('trans_status', "UP")->sum('trans_value') ?? 0;
 
         $data['thisMonth']['spending'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereMonth('trans_date', $bulan)
             ->whereYear('trans_date', $tahun)
-            ->where('trans_status', "DOWN")->sum('trans_value');
+            ->where('trans_status', "DOWN")->sum('trans_value') ?? 0;
 
         $data['transUp'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereMonth('trans_date', $bulan)
             ->whereYear('trans_date', $tahun)
-            ->where('trans_status', "UP")->orderBy('trans_date', 'DESC')->get();
+            ->where('trans_status', "UP")->with('subAsset')->orderBy('trans_date', 'DESC')->get();
 
         $data['transDown'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereMonth('trans_date', $bulan)
             ->whereYear('trans_date', $tahun)
-            ->where('trans_status', "DOWN")->orderBy('trans_date', 'DESC')->get();
+            ->where('trans_status', "DOWN")->with('subAsset')->orderBy('trans_date', 'DESC')->get();
 
         $data['monthSaved'] = $data['thisMonth']['income'] - $data['thisMonth']['spending'];
 
@@ -78,12 +78,12 @@ class PagesController extends Controller
         $data['thisMonth']['income'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereMonth('trans_date', $bulan)
             ->whereYear('trans_date', $tahun)
-            ->where('trans_status', "UP")->sum('trans_value');
+            ->where('trans_status', "UP")->sum('trans_value') ?? 0;
 
         $data['thisMonth']['spending'] = Transaction::where('trans_id_user', $user->user_id)
             ->whereMonth('trans_date', $bulan)
             ->whereYear('trans_date', $tahun)
-            ->where('trans_status', "DOWN")->sum('trans_value');
+            ->where('trans_status', "DOWN")->sum('trans_value') ?? 0;
 
         $tags = Tag::where('tag_is_belanja', 1)->orderBy('tag_name', 'ASC')->get();
         $data['tags'] = $tags->pluck('tag_name')->toArray();

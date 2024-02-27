@@ -32,6 +32,6 @@ class SubAsset extends Model
         $joinTable = 'assets';
         return self::leftJoin($joinTable, 'sub_assets.sub_id_asset', '=', $joinTable.'.asset_id')
         ->where('sub_assets.sub_id_user', $user_id)
-        ->orderBy('sub_assets.sub_id_asset', 'ASC')->orderBy('sub_assets.sub_name', 'ASC');
+        ->orderBy('sub_assets.sub_id_asset', 'ASC')->orderBy('sub_assets.sub_value', 'DESC');
     }
 }

@@ -10,7 +10,7 @@ class TagController extends Controller
 {
     public function getAllTag()
     {
-        $data = Tag::orderBy('tag_kode', 'ASC')->get();
+        $data = Tag::orderBy('tag_is_belanja', 'DESC')->orderBy('tag_kode', 'ASC')->get();
         return response()->json([
             'status' => true,
             'msg' => 'Data Received',

@@ -175,7 +175,7 @@
                                 @forelse ($transUp as $tu)
                                     <tr>
                                         <td>{{ $loop->iteration }}.</td>
-                                        <td>{{ $tu->trans_information }}</td>
+                                        <td>{{ $tu->trans_information }} (<span class="text-success">{{ $tu->subAsset->sub_name }}</span>)</td>
                                         <td class="text-center">{{ $tu->trans_date }}</td>
                                         <td class="text-right">@mataUang2($tu->trans_value)</td>
                                     </tr>

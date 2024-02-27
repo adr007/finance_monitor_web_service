@@ -23,7 +23,7 @@ class AssetsController extends Controller
         foreach ($assets as $asset) {
             $sum = $user->subAssets()->where('sub_id_asset', $asset->asset_id)->sum('sub_value');
             $x['assetName'] = $asset->asset_name;
-            $x['amount'] = $sum;
+            $x['amount'] = $sum ?? 0;
             $x['icon'] = $asset->asset_icon;
             $x['color'] = $asset->asset_color;
             array_push($sendSum, $x);
