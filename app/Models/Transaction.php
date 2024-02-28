@@ -34,8 +34,8 @@ class Transaction extends Model
         return self::leftJoin('sub_assets', 'transactions.trans_id_sub_asset', '=', 'sub_assets.sub_id')
         ->leftJoin('assets', 'sub_assets.sub_id_asset', '=', 'assets.asset_id')
         ->where('transactions.trans_id_user', $user_id)
-        ->whereYear('transactions.created_time', date('Y'))
-        ->whereMonth('transactions.created_time', date('m'))
+        ->whereYear('transactions.trans_date', date('Y'))
+        ->whereMonth('transactions.trans_date', date('m'))
         ->with('tag')
         ->orderBy('transactions.trans_date', 'DESC')->orderBy('transactions.trans_value', 'DESC');
     }

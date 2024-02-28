@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\UserAuthController;
+use App\Http\Controllers\TransController;
 use App\Http\Controllers\web\PagesController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,5 +28,14 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/user')->group(function () {
         Route::get('/dashboard', [PagesController::class, 'dashboard'])->name('user.dashboard');
         Route::get('/transaction', [PagesController::class, 'transaction'])->name('user.transaction');
+        Route::get('/report', [PagesController::class, 'report'])->name('user.report');
+        Route::get('/asset', [PagesController::class, 'asset'])->name('user.asset');
+
+        Route::post('/transaction/insert', [TransController::class, 'insert'])->name('user.transaction.insert');
+        Route::delete('/transaction/delete', [TransController::class, 'delete'])->name('user.transaction.delete');
+    });
+
+    Route::prefix('/data')->group(function () {
+        Route::get('/transaction/user', [TransController::class, 'dataUser'])->name('data.transaction.user');
     });
 });

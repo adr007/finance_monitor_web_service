@@ -3,7 +3,7 @@
     <!-- Custom styles for this page -->
     <link href="{{ asset('komponen/app') }}/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 @endsection
-@section('pageName', 'Transaction')
+@section('pageName', 'Transaction Report')
 @section('body')
     <div class="row">
         <div class="col-md-4">

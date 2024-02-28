@@ -4,7 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{Tag, Transaction, User};
+use App\Models\{Asset, SubAsset, Tag, Transaction, User};
 use Illuminate\Support\Facades\Auth;
 // use Utils;
 
@@ -60,7 +60,7 @@ class PagesController extends Controller
         return view('app.dashboard', $data);
     }
 
-    public function transaction()
+    public function report()
     {
         $user = User::find(Auth::user()->user_id);
 
@@ -96,7 +96,6 @@ class PagesController extends Controller
                 ->where('trans_tag', $tag->tag_kode)
                 ->where('trans_status', "DOWN")->sum('trans_value');
             array_push($data['tags_value'], $sum);
-           
         }
 
         $data['transDown'] = Transaction::where('trans_id_user', $user->user_id)
@@ -105,5 +104,22 @@ class PagesController extends Controller
             ->where('trans_status', "DOWN")->with('tag')->orderBy('trans_date', 'DESC')->get();
 
         return view('app.transaction', $data);
+    }
+
+    public function transaction()
+    {
+        $user = Auth::user();
+        $data['assets'] = SubAsset::where('sub_id_user', $user->user_id)->with('asset')
+            ->orderBy('sub_id_asset', 'ASC')->orderBy('sub_value', 'DESC')->get();
+        $data['tags'] = Tag::orderBy('tag_is_belanja', 'DESC')->orderBy('tag_kode', 'ASC')->get();
+        return view('app.trans', $data);
+    }
+
+    public function asset()
+    {
+        $user = Auth::user();
+        $data['assets'] = SubAsset::where('sub_id_user', $user->user_id)->with('asset')
+            ->orderBy('sub_id_asset', 'ASC')->orderBy('sub_value', 'DESC')->get();
+        return view('app.asset', $data);
     }
 }

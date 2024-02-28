@@ -34,8 +34,11 @@
         </div>
 
         @php
-            $persen = ($monthSaved / $thisMonth['income']) * 100;
-            
+            $persen = 0;
+            if ($thisMonth['income'] >= 1) {
+                $persen = ($monthSaved / $thisMonth['income']) * 100;
+            }
+
             if ($monthSaved <= 0) {
                 $color = '#ffecec';
                 $warna = 'danger';
