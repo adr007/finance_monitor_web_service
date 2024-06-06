@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Utils;
 use App\Models\SubAsset;
 use App\Models\Tag;
 use App\Models\Transaction;
@@ -11,6 +12,11 @@ use Yajra\DataTables\Facades\DataTables;
 
 class TransController extends Controller
 {
+
+    public $up_code = 'trans_up';
+    public $down_code = 'trans_down';
+    public $delete_code = 'trans_delete';
+
     public function dataUser()
     {
         $user = Auth::user();
@@ -46,8 +52,10 @@ class TransController extends Controller
         $tag = Tag::find($request->tag_id);
 
         $trans_status = 'DOWN';
+        $code = $this->down_code;
         if ($tag->tag_is_belanja == 0) {
             $trans_status = 'UP';
+            $code = $this->up_code;
         }
 
         Transaction::create([
@@ -60,11 +68,24 @@ class TransController extends Controller
             'trans_date' => $request->trans_date,
         ]);
 
+        $subAsset = SubAsset::find($request->sub_id);
+        $oldVal = $subAsset->sub_value;
+
         if ($trans_status == "UP") {
-            SubAsset::find($request->sub_id)->increment('sub_value', $request->trans_value);
+            $subAsset->increment('sub_value', $request->trans_value);
         } else {
-            SubAsset::find($request->sub_id)->decrement('sub_value', $request->trans_value);
+            $subAsset->decrement('sub_value', $request->trans_value);
         }
+
+        Utils::logInsert(
+            $user->user_name,
+            $subAsset->sub_name,
+            $code,
+            $request->trans_date,
+            $request->trans_value,
+            $oldVal,
+            $subAsset->sub_value
+        );
 
         return response()->json([
             'status' => true,
@@ -84,13 +105,28 @@ class TransController extends Controller
             ]);
         }
 
+        $subAsset = SubAsset::find($trans->trans_id_sub_asset);
+        $oldVal = $subAsset->sub_value;
+        $tr_val = $trans->trans_value;
+
         if ($trans->trans_status == "UP") {
-            SubAsset::find($trans->trans_id_sub_asset)->decrement('sub_value', $trans->trans_value);
+            $subAsset->decrement('sub_value', $trans->trans_value);
         } else {
-            SubAsset::find($trans->trans_id_sub_asset)->increment('sub_value', $trans->trans_value);
+            $subAsset->increment('sub_value', $trans->trans_value);
         }
 
         $trans->delete();
+
+        Utils::logInsert(
+            $user->user_name,
+            $subAsset->sub_name,
+            $this->delete_code,
+            date('Y-m-d'),
+            $tr_val,
+            $oldVal,
+            $subAsset->sub_value
+        );
+
         return response()->json([
             'status' => true,
             'msg' => 'Data Deleted',

@@ -178,7 +178,8 @@
                                 @forelse ($transUp as $tu)
                                     <tr>
                                         <td>{{ $loop->iteration }}.</td>
-                                        <td>{{ $tu->trans_information }} (<span class="text-success">{{ $tu->subAsset->sub_name }}</span>)</td>
+                                        <td>{{ $tu->trans_information }} (<span
+                                                class="text-success">{{ $tu->subAsset->sub_name }}</span>)</td>
                                         <td class="text-center">{{ $tu->trans_date }}</td>
                                         <td class="text-right">@mataUang2($tu->trans_value)</td>
                                     </tr>
@@ -238,6 +239,40 @@
 
     </div>
 
+    <div class="row">
+        <div class="col-12">
+            <h4>Assets Spread</h4>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body" style="overflow: auto">
+                    <table class="table table-hover" style="min-width: 600px;">
+                        <tbody>
+                            @foreach ($assetSpread as $spread)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td class="text-center {{ $spread['asset_color'] }}">
+                                        <i class="{{ $spread['asset_icon'] }}"></i>
+                                        {{ $spread['asset_name'] }}
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>
+                                            @mataUang2($spread['asset_value'])
+                                        </strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>
+                                            {{ $spread['asset_persen'] }} %
+                                        </strong>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 @section('script')

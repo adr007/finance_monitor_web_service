@@ -284,6 +284,16 @@
             }
         });
 
+        $(document).ready(function() {
+            @if (session('success'))
+                alert(`{!! session('success') !!}`);
+            @endif
+
+            @if (session('error'))
+                alert(`{!! session('error') !!}`);
+            @endif
+        });
+
         const rupiah = (number) => {
             return new Intl.NumberFormat("id-ID", {
                 style: "currency",

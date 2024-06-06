@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssetController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\TransController;
 use App\Http\Controllers\web\PagesController;
@@ -31,8 +32,17 @@ Route::middleware('auth')->group(function () {
         Route::get('/report', [PagesController::class, 'report'])->name('user.report');
         Route::get('/asset', [PagesController::class, 'asset'])->name('user.asset');
 
+        Route::post('/asset/convert', [AssetController::class, 'convert'])->name('user.asset.convert');
+
         Route::post('/transaction/insert', [TransController::class, 'insert'])->name('user.transaction.insert');
         Route::delete('/transaction/delete', [TransController::class, 'delete'])->name('user.transaction.delete');
+    });
+
+    Route::prefix('/auth/asset')->group(function () {
+        Route::get('/get/{id?}', [AssetController::class, 'get'])->name('auth.asset.get');
+        Route::post('/insert', [AssetController::class, 'insert'])->name('auth.asset.insert');
+        Route::post('/update', [AssetController::class, 'update'])->name('auth.asset.update');
+        Route::delete('/delete', [AssetController::class, 'delete'])->name('auth.asset.delete');
     });
 
     Route::prefix('/data')->group(function () {

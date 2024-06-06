@@ -57,6 +57,24 @@ class PagesController extends Controller
 
         $data['totalAssets'] = $user->subAssets()->sum('sub_value');
 
+        $assets = Asset::orderBy('asset_id')->get();
+        $xyz = [];
+        foreach ($assets as $ast) {
+            $temp['asset_name'] = $ast->asset_name;
+            $temp['asset_icon'] = $ast->asset_web_icon;
+            $temp['asset_color'] = $ast->asset_web_color;
+            $temp['asset_value'] = SubAsset::where('sub_id_asset', $ast->asset_id)
+                ->where('sub_id_user', $user->user_id)->sum('sub_value');
+            $temp['asset_persen'] = round(($temp['asset_value'] / $data['totalAssets']) * 100, 2);
+            array_push($xyz, $temp);
+        }
+
+        usort($xyz, function ($a, $b) {
+            return $b['asset_persen'] - $a['asset_persen'];
+        });
+
+        $data['assetSpread'] = $xyz;
+
         return view('app.dashboard', $data);
     }
 
@@ -118,6 +136,7 @@ class PagesController extends Controller
     public function asset()
     {
         $user = Auth::user();
+        $data['classAssets'] = Asset::orderBy('asset_id', 'ASC')->get();
         $data['assets'] = SubAsset::where('sub_id_user', $user->user_id)->with('asset')
             ->orderBy('sub_id_asset', 'ASC')->orderBy('sub_value', 'DESC')->get();
         return view('app.asset', $data);

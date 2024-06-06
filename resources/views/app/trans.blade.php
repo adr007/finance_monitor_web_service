@@ -12,20 +12,21 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <button type="button" onclick="initAdd()" class="btn btn-success btn-icon-split btn-sm">
+                        <div class="col-md-12">
+                            <button type="button" onclick="initAdd()" class="btn btn-success btn-icon-split btn-sm mb-3">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-plus"></i>
                                 </span>
                                 <span class="text">Add Transaction</span>
                             </button>
                         </div>
-                        <div class="col-md-12">
-                            <table id="tbl1" class="table table-striped table-hover" style="width: 100%">
+                        <div class="col-md-12" style="overflow: auto;">
+                            <table id="tbl1" class="table table-striped table-hover" style="width: 100%; font-size: 11pt">
                                 <thead>
                                     <tr>
                                         <th width="10">#</th>
                                         <th>Type</th>
+                                        <th>Asset</th>
                                         <th>Tag</th>
                                         <th>Desc</th>
                                         <th width="90">Date</th>
@@ -135,6 +136,11 @@
                     {
                         data: 'status',
                         name: 'status'
+                    },
+                    {
+                        data: 'sub_name',
+                        name: 'sub_name',
+                        className: 'text-primary'
                     },
                     {
                         data: 'tag.tag_name',
