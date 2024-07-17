@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/transaction', [PagesController::class, 'transaction'])->name('user.transaction');
         Route::get('/report', [PagesController::class, 'report'])->name('user.report');
         Route::get('/asset', [PagesController::class, 'asset'])->name('user.asset');
+        Route::get('/logs', [PagesController::class, 'logs'])->name('user.logs');
 
         Route::post('/asset/convert', [AssetController::class, 'convert'])->name('user.asset.convert');
 

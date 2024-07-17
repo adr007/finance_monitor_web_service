@@ -4,7 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{Asset, SubAsset, Tag, Transaction, User};
+use App\Models\{Asset, Logs, SubAsset, Tag, Transaction, User};
 use Illuminate\Support\Facades\Auth;
 // use Utils;
 
@@ -140,5 +140,12 @@ class PagesController extends Controller
         $data['assets'] = SubAsset::where('sub_id_user', $user->user_id)->with('asset')
             ->orderBy('sub_id_asset', 'ASC')->orderBy('sub_value', 'DESC')->get();
         return view('app.asset', $data);
+    }
+
+    public function logs()
+    {
+        $data['logs'] = Logs::where('user_id', Auth::user()->user_id)->orderBy('date', 'DESC')
+            ->orderBy('tr_value', 'DESC')->get();
+        return view('app.logs', $data);
     }
 }

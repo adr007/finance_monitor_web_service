@@ -99,6 +99,12 @@
                     <span>Activity Report</span></a>
             </li>
 
+            <li class="nav-item" id="mn4">
+                <a class="nav-link" href="{{ route('user.logs') }}">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Logs</span></a>
+            </li>
+
             <!-- Nav Item - Pages Collapse Menu -->
             {{-- <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
