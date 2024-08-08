@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/insert', [AssetController::class, 'insert'])->name('auth.asset.insert');
         Route::post('/update', [AssetController::class, 'update'])->name('auth.asset.update');
         Route::delete('/delete', [AssetController::class, 'delete'])->name('auth.asset.delete');
+
+        Route::get('/update-real-val', [AssetController::class, 'updateRealVal'])->name('auth.asset.update-real-val');
     });
 
     Route::prefix('/data')->group(function () {

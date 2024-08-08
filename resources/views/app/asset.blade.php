@@ -1,5 +1,45 @@
 @extends('_layouts.app')
 @section('css')
+    <style>
+        .bn632-hover {
+            width: 200px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            margin: 10px 20px;
+            height: 55px;
+            text-align: center;
+            border: none;
+            background-size: 300% 100%;
+            border-radius: 50px;
+            moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+        }
+
+        .bn632-hover:hover {
+            background-position: 100% 0;
+            moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+        }
+
+        .bn632-hover:focus {
+            outline: none;
+        }
+
+        .bn632-hover.bn21 {
+            background-image: linear-gradient(to right,
+                    #fc6076,
+                    #ff9a44,
+                    #ef9d43,
+                    #e75516);
+            box-shadow: 0 4px 15px 0 rgba(252, 104, 110, 0.75);
+        }
+    </style>
 @endsection
 @section('pageName', 'Asset Data')
 @section('body')
@@ -19,6 +59,11 @@
                 <span class="text">Convert</span>
             </button>
         </div>
+        <div class="col-xl-12 mb-4 text-center">
+            <a href="{{ route('auth.asset.update-real-val') }}">
+                <button class="bn632-hover bn21">ðŸ’¸ Update Real Value</button>
+            </a>
+        </div>
         @foreach ($assets as $asset)
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card shadow h-100 py-2">
@@ -36,6 +81,9 @@
                                 <span>
                                     <i class="fa fa-map-marker {{ $asset->asset->asset_web_color }}"></i>
                                     {{ $asset->sub_vendor }}
+                                    @if (@$asset->code)
+                                        <small>({{ $asset->code }})</small>
+                                    @endif
                                 </span>
                             </div>
                             <div class="col-auto">
@@ -135,12 +183,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="">Class <span class="text-danger">*</span></label>
+                            <label for="">Tipe <span class="text-danger">*</span></label>
                             <select class="form-control" name="sub_id_asset" id="sub_id_asset" required>
-                                <option value="">-- Pilih --</option>
+                                <option value="">-- Select --</option>
                                 @foreach ($classAssets as $cass)
                                     <option value="{{ $cass->asset_id }}">
-                                        💎{{ $cass->asset_name }}
+                                        ðŸ’Ž{{ $cass->asset_name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -154,8 +202,16 @@
                             <input type="text" name="sub_vendor" id="sub_vendor" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="">Value (Rp) <span class="text-danger">*</span></label>
-                            <input type="number" name="sub_value" id="sub_value" class="form-control" required>
+                            <label for="">Fiat Value (Rp) <span class="text-danger">*</span></label>
+                            <input type="number" step="any" name="sub_value" id="sub_value" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Value</label>
+                            <input type="number" step="any" name="val" id="val" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Code</label>
+                            <input type="text" name="code" id="code" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -207,6 +263,8 @@
             $('#sub_name').val(data.sub_name);
             $('#sub_vendor').val(data.sub_vendor);
             $('#sub_value').val(data.sub_value);
+            $('#val').val(data.val);
+            $('#code').val(data.code);
         }
 
         function initDelete(id) {

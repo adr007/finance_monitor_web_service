@@ -77,6 +77,8 @@ class AssetController extends Controller
             'sub_name' => $request->sub_name,
             'sub_vendor' => $request->sub_vendor,
             'sub_value' => $request->sub_value,
+            'val' => $request->val ?? 0,
+            'code' => $request->code,
         ]);
 
         Utils::logInsert(
@@ -105,6 +107,8 @@ class AssetController extends Controller
         $subAsset->sub_name = $request->sub_name;
         $subAsset->sub_vendor = $request->sub_vendor;
         $subAsset->sub_value = $request->sub_value;
+        $subAsset->val = $request->val ?? 0;
+        $subAsset->code = $request->code;
         $subAsset->save();
 
         Utils::logInsert(
@@ -144,5 +148,56 @@ class AssetController extends Controller
         );
 
         return redirect()->back()->with('success', "Asset Deleted");
+    }
+
+    public function updateRealVal()
+    {
+        $dolarToRupiah = 16000;
+        $assets = SubAsset::where('sub_id_user', Auth::user()->user_id)
+            ->where('sub_id_asset', 2)->whereNotNull('code')->get();
+
+        $url = 'https://www.binance.me/api/v3/ticker/price?symbol=';
+
+        foreach ($assets as $asst) {
+            try {
+                $response = file_get_contents($url . $asst->code);
+                if ($response === FALSE) {
+                    return redirect()->back()->with('error', "API Response Error");
+                }
+                $data = json_decode($response, true);
+                $asst->sub_value = ($data['price'] * $asst->val) * $dolarToRupiah;
+                $asst->save();
+                // var_dump($data);
+                // echo "<br>";
+            } catch (\Throwable $th) {
+            }
+        }
+
+        return redirect()->back()->with('success', "Update Data Success");
+
+        // $url = 'https://www.binance.me/api/v3/ticker/price?symbols=';
+
+        // $symbols = [];
+        // foreach ($assets as $asst) {
+        //     array_push($symbols, $asst->code);
+        // }
+
+        // $response = file_get_contents($url . json_encode($symbols));
+
+        // if ($response === FALSE) {
+        //     return redirect()->back()->with('error', "API Response Error");
+        // }
+
+        // $data = json_decode($response, true);
+
+        // // dd($data);
+
+        // if ($data === NULL) {
+        //     return redirect()->back()->with('error', "API Data Error");
+        // }
+
+        // foreach ($data as $ticker) {
+        //     echo 'Symbol: ' . $ticker['symbol'] . ' - Price: ' . $ticker['price'] . PHP_EOL;
+        // }
     }
 }
