@@ -152,9 +152,24 @@ class AssetController extends Controller
 
     public function updateRealVal()
     {
-        $dolarToRupiah = 16000;
+        $dolarToRupiah = 0;
+        
         $assets = SubAsset::where('sub_id_user', Auth::user()->user_id)
             ->where('sub_id_asset', 2)->whereNotNull('code')->get();
+            
+        $urlIDR = "https://api.coingecko.com/api/v3/simple/price?ids=usd&vs_currencies=idr";
+        
+        try {
+            $ress = file_get_contents($urlIDR);
+            if ($ress === FALSE) {
+                return redirect()->back()->with('error', "API IDR Response Error");
+            }
+            $data = json_decode($ress, true);
+            $dolarToRupiah = $data["usd"]["idr"];
+            //dd($data);
+        } catch (\Throwable $th) {
+            //dd($th->getMessage());
+        }
 
         $url = 'https://www.binance.me/api/v3/ticker/price?symbol=';
 
@@ -173,7 +188,7 @@ class AssetController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', "Update Data Success");
+        return redirect()->back()->with('success', "Update Data Success. 1 Dollar = ".$dolarToRupiah);
 
         // $url = 'https://www.binance.me/api/v3/ticker/price?symbols=';
 
