@@ -6,6 +6,7 @@ use App\Helpers\Utils;
 use App\Models\SubAsset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class AssetController extends Controller
 {
@@ -153,12 +154,12 @@ class AssetController extends Controller
     public function updateRealVal()
     {
         $dolarToRupiah = 0;
-        
+
         $assets = SubAsset::where('sub_id_user', Auth::user()->user_id)
             ->where('sub_id_asset', 2)->whereNotNull('code')->get();
-            
+
         $urlIDR = "https://api.coingecko.com/api/v3/simple/price?ids=usd&vs_currencies=idr";
-        
+
         try {
             $ress = file_get_contents($urlIDR);
             if ($ress === FALSE) {
@@ -168,51 +169,32 @@ class AssetController extends Controller
             $dolarToRupiah = $data["usd"]["idr"];
             //dd($data);
         } catch (\Throwable $th) {
-            //dd($th->getMessage());
+            // dd($th->getMessage());
         }
-
-        $url = 'https://www.binance.me/api/v3/ticker/price?symbol=';
 
         foreach ($assets as $asst) {
             try {
-                $response = file_get_contents($url . $asst->code);
-                if ($response === FALSE) {
-                    return redirect()->back()->with('error', "API Response Error");
-                }
-                $data = json_decode($response, true);
-                $asst->sub_value = ($data['price'] * $asst->val) * $dolarToRupiah;
+
+                $response = Http::withHeaders([
+                    'accept' => 'application/json',
+                    'x-cg-demo-api-key' => 'CG-mDpMpWL7iw4tBkBnUzzKoJZn',
+                ])->get('https://api.coingecko.com/api/v3/simple/price', [
+                    'vs_currencies' => 'usd',
+                    'ids' => $asst->code,
+                    'include_24hr_change' => 'true',
+                    'precision' => '2',
+                ]);
+                $data = $response->json()[$asst->code];
+
+                $asst->sub_value = ($data['usd'] * $asst->val) * $dolarToRupiah;
                 $asst->save();
                 // var_dump($data);
                 // echo "<br>";
             } catch (\Throwable $th) {
+                // dd($th->getMessage());
             }
         }
 
-        return redirect()->back()->with('success', "Update Data Success. 1 Dollar = ".$dolarToRupiah);
-
-        // $url = 'https://www.binance.me/api/v3/ticker/price?symbols=';
-
-        // $symbols = [];
-        // foreach ($assets as $asst) {
-        //     array_push($symbols, $asst->code);
-        // }
-
-        // $response = file_get_contents($url . json_encode($symbols));
-
-        // if ($response === FALSE) {
-        //     return redirect()->back()->with('error', "API Response Error");
-        // }
-
-        // $data = json_decode($response, true);
-
-        // // dd($data);
-
-        // if ($data === NULL) {
-        //     return redirect()->back()->with('error', "API Data Error");
-        // }
-
-        // foreach ($data as $ticker) {
-        //     echo 'Symbol: ' . $ticker['symbol'] . ' - Price: ' . $ticker['price'] . PHP_EOL;
-        // }
+        return redirect()->back()->with('success', "Update Data Success. 1 Dollar = " . $dolarToRupiah);
     }
 }

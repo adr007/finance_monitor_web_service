@@ -61,7 +61,7 @@
         </div>
         <div class="col-xl-12 mb-4 text-center">
             <a href="{{ route('auth.asset.update-real-val') }}">
-                <button class="bn632-hover bn21">ðŸ’¸ Update Real Value</button>
+                <button class="bn632-hover bn21">💸 Update Real Value</button>
             </a>
         </div>
         @foreach ($assets as $asset)
@@ -188,7 +188,7 @@
                                 <option value="">-- Select --</option>
                                 @foreach ($classAssets as $cass)
                                     <option value="{{ $cass->asset_id }}">
-                                        ðŸ’Ž{{ $cass->asset_name }}
+                                        💎{{ $cass->asset_name }}
                                     </option>
                                 @endforeach
                             </select>
