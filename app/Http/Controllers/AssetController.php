@@ -7,6 +7,7 @@ use App\Models\SubAsset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class AssetController extends Controller
 {
@@ -172,28 +173,41 @@ class AssetController extends Controller
             // dd($th->getMessage());
         }
 
+        $coinsPrices = [];
+
         foreach ($assets as $asst) {
             try {
+                $coinId = strtolower($asst->code); // CoinGecko mengharuskan lowercase
 
-                $response = Http::withHeaders([
-                    'accept' => 'application/json',
-                    'x-cg-demo-api-key' => 'CG-mDpMpWL7iw4tBkBnUzzKoJZn',
-                ])->get('https://api.coingecko.com/api/v3/simple/price', [
-                    'vs_currencies' => 'usd',
-                    'ids' => $asst->code,
-                    'include_24hr_change' => 'true',
-                    'precision' => '2',
-                ]);
-                $data = $response->json()[$asst->code];
+                if (!isset($coinsPrices[$coinId])) {
+                    $response = Http::withHeaders([
+                        'accept' => 'application/json',
+                        'x-cg-demo-api-key' => 'CG-mDpMpWL7iw4tBkBnUzzKoJZn',
+                    ])->get('https://api.coingecko.com/api/v3/simple/price', [
+                        'vs_currencies' => 'usd',
+                        'ids' => $coinId,
+                        'include_24hr_change' => 'true',
+                        'precision' => '2',
+                    ]);
 
-                $asst->sub_value = ($data['usd'] * $asst->val) * $dolarToRupiah;
+                    $data = $response->json();
+                    // if (!isset($data[$coinId]['usd'])) {
+                    //     throw new \Exception("USD price not found for coin ID: $coinId");
+                    // }
+                    $coinsPrices[$coinId] = $data[$coinId]['usd'];
+                }
+
+                $harga1 = $coinsPrices[$coinId];
+
+                $asst->sub_value = ($harga1 * $asst->val) * $dolarToRupiah;
                 $asst->save();
-                // var_dump($data);
-                // echo "<br>";
             } catch (\Throwable $th) {
-                // dd($th->getMessage());
+                // Debugging log (bisa pakai Laravel log)
+                Log::error("Failed updating asset value for {$asst->code}: " . $th->getMessage());
+                // Optional: continue;
             }
         }
+
 
         return redirect()->back()->with('success', "Update Data Success. 1 Dollar = " . $dolarToRupiah);
     }
