@@ -75,6 +75,9 @@ class PagesController extends Controller
 
         $data['assetSpread'] = $xyz;
 
+        $data['btc'] = SubAsset::where('sub_id_user', $user->user_id)->where('sub_name', 'BTC')->sum('val');
+        $data['btc_fiat'] = SubAsset::where('sub_id_user', $user->user_id)->where('sub_name', 'BTC')->sum('sub_value');
+
         return view('app.dashboard', $data);
     }
 
