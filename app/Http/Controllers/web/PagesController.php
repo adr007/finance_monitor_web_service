@@ -65,7 +65,11 @@ class PagesController extends Controller
             $temp['asset_color'] = $ast->asset_web_color;
             $temp['asset_value'] = SubAsset::where('sub_id_asset', $ast->asset_id)
                 ->where('sub_id_user', $user->user_id)->sum('sub_value');
-            $temp['asset_persen'] = round(($temp['asset_value'] / $data['totalAssets']) * 100, 2);
+            $asset_persen = 0;
+            if ($temp['asset_value'] > 0) {
+                $asset_persen = round(($temp['asset_value'] / $data['totalAssets']) * 100, 2);
+            }
+            $temp['asset_persen'] = $asset_persen;
             array_push($xyz, $temp);
         }
 
