@@ -160,20 +160,23 @@ class AssetController extends Controller
             ->where('sub_id_asset', 2)->whereNotNull('code')->get();
 
         $urlIDR = "https://api.coingecko.com/api/v3/simple/price?ids=usd&vs_currencies=idr";
-
-        try {
-            $ress = file_get_contents($urlIDR);
-            if ($ress === FALSE) {
-                return redirect()->back()->with('error', "API IDR Response Error");
-            }
-            $data = json_decode($ress, true);
-            $dolarToRupiah = $data["usd"]["idr"];
-            //dd($data);
-        } catch (\Throwable $th) {
-            // dd($th->getMessage());
+        
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'User-Agent' => 'Mozilla/5.0'
+        ])->get('https://api.coingecko.com/api/v3/simple/price', [
+            'ids' => 'usd',
+            'vs_currencies' => 'idr'
+        ]);
+    
+        if ($response->failed()) {
+            return back()->with('error', 'API CoinGecko gagal diakses');
         }
-
+        
+        $data = $response->json();
+        $dolarToRupiah = $data["usd"]["idr"];
         $coinsPrices = [];
+        // dd($dolarToRupiah);
 
         foreach ($assets as $asst) {
             try {
