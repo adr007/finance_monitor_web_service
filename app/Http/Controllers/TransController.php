@@ -15,12 +15,13 @@ class TransController extends Controller
 
     public $up_code = 'trans_up';
     public $down_code = 'trans_down';
+    public $update_code = 'trans_update';
     public $delete_code = 'trans_delete';
 
-    public function dataUser()
+    public function dataUser($bulan = null)
     {
         $user = Auth::user();
-        $data = Transaction::getAllByUserJoinSubAssets($user->user_id);
+        $data = Transaction::getAllByUserJoinSubAssets($user->user_id, $bulan, date('Y'));
 
         return DataTables::of($data)
             ->addIndexColumn()
@@ -37,6 +38,7 @@ class TransController extends Controller
                   <i class="fa fa-align-justify"></i>
                 </button>
                 <div class="dropdown-menu">
+                  <button class="dropdown-item" type="button" onclick="initEdit(' . $row->trans_id . ')">Edit</button>
                   <button class="dropdown-item text-danger" type="button" onclick="initHapus(' . $row->trans_id . ')">Hapus</button>
                 </div>
               </div>
@@ -44,6 +46,31 @@ class TransController extends Controller
             })
             ->rawColumns(['status', 'menu'])
             ->make(true);
+    }
+
+    public function get($id)
+    {
+        $user = Auth::user();
+        $trans = Transaction::with('tag')->find($id);
+
+        if (!$trans || $user->user_id != $trans->trans_id_user) {
+            return response()->json([
+                'status' => false,
+                'msg' => 'Access Denied',
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'trans_id' => $trans->trans_id,
+                'sub_id' => $trans->trans_id_sub_asset,
+                'tag_id' => $trans->tag->tag_id ?? null,
+                'trans_value' => $trans->trans_value,
+                'trans_information' => $trans->trans_information,
+                'trans_date' => $trans->trans_date,
+            ],
+        ]);
     }
 
     public function insert(Request $request)
@@ -90,6 +117,67 @@ class TransController extends Controller
         return response()->json([
             'status' => true,
             'msg' => 'Data Created',
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        $trans = Transaction::find($request->trans_id);
+
+        if (!$trans || $user->user_id != $trans->trans_id_user) {
+            return response()->json([
+                'status' => false,
+                'msg' => 'Access Denied',
+            ]);
+        }
+
+        $oldSubAsset = SubAsset::find($trans->trans_id_sub_asset);
+        if ($trans->trans_status == 'UP') {
+            $oldSubAsset->decrement('sub_value', $trans->trans_value);
+        } else {
+            $oldSubAsset->increment('sub_value', $trans->trans_value);
+        }
+        $oldSubAsset->refresh();
+
+        $tag = Tag::find($request->tag_id);
+        $trans_status = 'DOWN';
+        if ($tag->tag_is_belanja == 0) {
+            $trans_status = 'UP';
+        }
+
+        $trans->trans_id_sub_asset = $request->sub_id;
+        $trans->trans_value = $request->trans_value;
+        $trans->trans_tag = $tag->tag_kode;
+        $trans->trans_status = $trans_status;
+        $trans->trans_information = $request->trans_information;
+        $trans->trans_date = $request->trans_date;
+        $trans->save();
+
+        $newSubAsset = $oldSubAsset->sub_id == $request->sub_id
+            ? $oldSubAsset
+            : SubAsset::find($request->sub_id);
+        $oldVal = $newSubAsset->sub_value;
+
+        if ($trans_status == 'UP') {
+            $newSubAsset->increment('sub_value', $request->trans_value);
+        } else {
+            $newSubAsset->decrement('sub_value', $request->trans_value);
+        }
+
+        Utils::logInsert(
+            $user->user_name,
+            $newSubAsset->sub_name,
+            $this->update_code,
+            $request->trans_date,
+            $request->trans_value,
+            $oldVal,
+            $newSubAsset->sub_value
+        );
+
+        return response()->json([
+            'status' => true,
+            'msg' => 'Data Updated',
         ]);
     }
 

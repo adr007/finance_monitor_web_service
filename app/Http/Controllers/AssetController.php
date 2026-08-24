@@ -159,22 +159,19 @@ class AssetController extends Controller
         $assets = SubAsset::where('sub_id_user', Auth::user()->user_id)
             ->where('sub_id_asset', 2)->whereNotNull('code')->get();
 
-        $urlIDR = "https://api.coingecko.com/api/v3/simple/price?ids=usd&vs_currencies=idr";
+        $urlIDR = "https://api.frankfurter.dev/v2/rate/USD/IDR";
         
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'User-Agent' => 'Mozilla/5.0'
-        ])->get('https://api.coingecko.com/api/v3/simple/price', [
-            'ids' => 'usd',
-            'vs_currencies' => 'idr'
-        ]);
+        ])->get('https://api.frankfurter.dev/v2/rate/USD/IDR');
     
         if ($response->failed()) {
-            return back()->with('error', 'API CoinGecko gagal diakses');
+            return back()->with('error', 'API https://api.frankfurter.dev gagal diakses');
         }
         
         $data = $response->json();
-        $dolarToRupiah = $data["usd"]["idr"];
+        $dolarToRupiah = $data["rate"];
         $coinsPrices = [];
         // dd($dolarToRupiah);
 

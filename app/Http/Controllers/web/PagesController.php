@@ -131,12 +131,14 @@ class PagesController extends Controller
         return view('app.transaction', $data);
     }
 
-    public function transaction()
+    public function transaction($bulan = null)
     {
         $user = Auth::user();
+        $bulan = $bulan ?? date('m');
         $data['assets'] = SubAsset::where('sub_id_user', $user->user_id)->with('asset')
             ->orderBy('sub_id_asset', 'ASC')->orderBy('sub_value', 'DESC')->get();
         $data['tags'] = Tag::orderBy('tag_is_belanja', 'DESC')->orderBy('tag_kode', 'ASC')->get();
+        $data['bulan'] = $bulan + 0;
         return view('app.trans', $data);
     }
 

@@ -28,14 +28,16 @@ Route::post('/logout/web', [UserAuthController::class, 'gasLogout'])->name('web.
 Route::middleware('auth')->group(function () {
     Route::prefix('/user')->group(function () {
         Route::get('/dashboard', [PagesController::class, 'dashboard'])->name('user.dashboard');
-        Route::get('/transaction', [PagesController::class, 'transaction'])->name('user.transaction');
+        Route::get('/transaction/{bulan?}', [PagesController::class, 'transaction'])->name('user.transaction');
         Route::get('/report', [PagesController::class, 'report'])->name('user.report');
         Route::get('/asset', [PagesController::class, 'asset'])->name('user.asset');
         Route::get('/logs', [PagesController::class, 'logs'])->name('user.logs');
 
         Route::post('/asset/convert', [AssetController::class, 'convert'])->name('user.asset.convert');
 
+        Route::get('/transaction/get/{id}', [TransController::class, 'get'])->name('user.transaction.get');
         Route::post('/transaction/insert', [TransController::class, 'insert'])->name('user.transaction.insert');
+        Route::post('/transaction/update', [TransController::class, 'update'])->name('user.transaction.update');
         Route::delete('/transaction/delete', [TransController::class, 'delete'])->name('user.transaction.delete');
     });
 
@@ -49,6 +51,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::prefix('/data')->group(function () {
-        Route::get('/transaction/user', [TransController::class, 'dataUser'])->name('data.transaction.user');
+        Route::get('/transaction/user/{bulan?}', [TransController::class, 'dataUser'])->name('data.transaction.user');
     });
 });

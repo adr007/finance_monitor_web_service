@@ -4,7 +4,35 @@
 @endsection
 @section('pageName', 'Transaction Data')
 @section('body')
+@php
+    $bulanList = [
+        '1' => 'January',
+        '2' => 'February',
+        '3' => 'March',
+        '4' => 'April',
+        '5' => 'May',
+        '6' => 'June',
+        '7' => 'July',
+        '8' => 'August',
+        '9' => 'September',
+        '10' => 'October',
+        '11' => 'November',
+        '12' => 'December',
+    ]
+@endphp
     <div class="row">
+        <div class="col-12">
+            <div class="form-group">
+                <label for="">Select Month</label>
+                <select class="form-control" name="bulan" id="bulan" onchange="window.location.href='{{ route('user.transaction') }}/'+this.value">
+                    @foreach ($bulanList as $bln => $blnName)
+                        <option value="{{ $bln }}" {{ $bulan == $bln ? 'selected' : '' }}>
+                            {{ $blnName }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
         <div class="col-md-12">
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -48,9 +76,10 @@
         <div class="modal-dialog" role="document">
             <form id="form1" method="POST" action="{{ route('user.transaction.insert') }}">
                 @csrf
+                <input type="hidden" name="trans_id" id="trans_id" value="">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add Transaction</h5>
+                        <h5 class="modal-title" id="modal1-title">Add Transaction</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -127,7 +156,7 @@
                 responsive: true,
                 serverSide: false,
                 scrollX: true,
-                ajax: "{{ route('data.transaction.user') }}",
+                ajax: "{{ route('data.transaction.user', $bulan) }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -173,7 +202,29 @@
 
         function initAdd() {
             $('#form1').trigger('reset');
+            $('#trans_id').val('');
+            $('#modal1-title').text('Add Transaction');
+            $('#form1').attr('action', "{{ route('user.transaction.insert') }}");
             $('#modal1').modal('show');
+        }
+
+        async function initEdit(trans_id) {
+            let res = await sendAjax("{{ url('user/transaction/get') }}/" + trans_id, {}, 'GET');
+            if (res.status) {
+                $('#form1').trigger('reset');
+                $('#trans_id').val(res.data.trans_id);
+                $('#sub_id').val(res.data.sub_id);
+                $('#tag_id').val(res.data.tag_id);
+                $('#trans_value').val(res.data.trans_value);
+                $('#trans_information').val(res.data.trans_information);
+                $('#trans_date').val(res.data.trans_date);
+                $('#modal1-title').text('Edit Transaction');
+                $('#form1').attr('action', "{{ route('user.transaction.update') }}");
+                $('#modal1').modal('show');
+            } else {
+                console.log(res);
+                alert(res.msg);
+            }
         }
 
         $('#form1').on('submit', async function(e) {
