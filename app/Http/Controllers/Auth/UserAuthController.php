@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 
 class UserAuthController extends Controller
 {
@@ -18,10 +19,10 @@ class UserAuthController extends Controller
     {
         $user = User::where('user_email', $request->user_email)->first();
         if ($user) {
-            if (Auth::attempt(['user_email' => $request->user_email, 'password' => $request->user_pass])) {
+            if (Auth::attempt(['user_email' => $request->user_email, 'password' => $request->user_pass], $request->boolean('remember'))) {
                 //SUCCESS
                 $request->session()->regenerate();
-                return redirect()->intended('/user/dashboard');
+                return redirect()->intended(RouteServiceProvider::HOME);
             } else {
                 //FAIL
                 return redirect()

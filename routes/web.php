@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\TransController;
@@ -21,8 +22,10 @@ Route::get('/', function () {
     return "What we do in life, Echoes in Eternity 🌓🌔🌕🌖🌗";
 });
 
-Route::get('/login', [UserAuthController::class, 'showLogin'])->name('web.login');
-Route::post('/login/web', [UserAuthController::class, 'gasLogin'])->name('web.login.gas');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [UserAuthController::class, 'showLogin'])->name('web.login');
+    Route::post('/login/web', [UserAuthController::class, 'gasLogin'])->name('web.login.gas');
+});
 Route::post('/logout/web', [UserAuthController::class, 'gasLogout'])->name('web.login.logout');
 
 Route::middleware('auth')->group(function () {
@@ -32,6 +35,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/report', [PagesController::class, 'report'])->name('user.report');
         Route::get('/asset', [PagesController::class, 'asset'])->name('user.asset');
         Route::get('/logs', [PagesController::class, 'logs'])->name('user.logs');
+
+        Route::get('/profile', [AccountController::class, 'profile'])->name('user.profile');
+        Route::post('/profile/update', [AccountController::class, 'updateProfile'])->name('user.profile.update');
+        Route::get('/setting', [AccountController::class, 'setting'])->name('user.setting');
+        Route::post('/setting/password', [AccountController::class, 'updatePassword'])->name('user.setting.password');
 
         Route::post('/asset/convert', [AssetController::class, 'convert'])->name('user.asset.convert');
 

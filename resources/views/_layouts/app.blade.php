@@ -105,6 +105,24 @@
                     <span>Logs</span></a>
             </li>
 
+            <hr class="sidebar-divider">
+
+            <div class="sidebar-heading">
+                Account
+            </div>
+
+            <li class="nav-item" id="mn-profile">
+                <a class="nav-link" href="{{ route('user.profile') }}">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Profile</span></a>
+            </li>
+
+            <li class="nav-item" id="mn-setting">
+                <a class="nav-link" href="{{ route('user.setting') }}">
+                    <i class="fas fa-fw fa-lock"></i>
+                    <span>Setting</span></a>
+            </li>
+
             <!-- Nav Item - Pages Collapse Menu -->
             {{-- <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
@@ -203,20 +221,21 @@
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ $user->user_name }}</span>
-                                <img class="img-profile rounded-circle" src="{{ $user->user_photo }}">
+                                <img class="img-profile rounded-circle" src="{{ $user->photo_url }}"
+                                    style="object-fit: cover">
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="{{ route('user.profile') }}">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profile
                                 </a>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="{{ route('user.setting') }}">
                                     <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Settings
                                 </a>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="{{ route('user.logs') }}">
                                     <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Activity Log
                                 </a>

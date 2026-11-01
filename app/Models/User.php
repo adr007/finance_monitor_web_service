@@ -46,6 +46,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function getPhotoUrlAttribute()
+    {
+        $photo = $this->user_photo;
+        if (!$photo) {
+            return 'https://ui-avatars.com/api/?background=7048e8&color=fff&bold=true&name=' . urlencode($this->user_name ?? 'U');
+        }
+        return preg_match('/^https?:\/\//', $photo) ? $photo : asset($photo);
+    }
+
     public function subAssets()
     {
         return $this->hasMany(SubAsset::class, 'sub_id_user', 'user_id');
