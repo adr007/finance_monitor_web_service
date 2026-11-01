@@ -164,11 +164,26 @@ class AssetController extends Controller
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'User-Agent' => 'Mozilla/5.0'
-        ])->get('https://api.frankfurter.dev/v2/rate/USD/IDR');
+        ])->get($urlIDR);
     
         if ($response->failed()) {
             return back()->with('error', 'API https://api.frankfurter.dev gagal diakses');
         }
+        
+        //BTC
+        $urlBTC = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true";
+        
+        $responseBTC = Http::withHeaders([
+            'Accept' => 'application/json',
+            'User-Agent' => 'Mozilla/5.0'
+        ])->get($urlBTC);
+    
+        if ($responseBTC->failed()) {
+            return back()->with('error', 'API https://api.coingecko.com/api/v3/simple/price gagal diakses');
+        }
+        $dataBTC = $responseBTC->json();
+        $priceBTC = $dataBTC['bitcoin']['usd'];
+        
         
         $data = $response->json();
         $dolarToRupiah = $data["rate"];
@@ -209,6 +224,6 @@ class AssetController extends Controller
         }
 
 
-        return redirect()->back()->with('success', "Update Data Success. 1 Dollar = " . $dolarToRupiah);
+        return redirect()->back()->with('success', "Update Data Success. 1 Dollar = " . $dolarToRupiah . ". 1BTC = " . $priceBTC);
     }
 }
