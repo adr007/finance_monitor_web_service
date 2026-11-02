@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [PagesController::class, 'dashboard'])->name('user.dashboard');
         Route::get('/transaction/{bulan?}', [PagesController::class, 'transaction'])->name('user.transaction');
         Route::get('/report', [PagesController::class, 'report'])->name('user.report');
+        Route::get('/report/annual', [PagesController::class, 'annualReport'])->name('user.report.annual');
         Route::get('/asset', [PagesController::class, 'asset'])->name('user.asset');
         Route::get('/logs', [PagesController::class, 'logs'])->name('user.logs');
 

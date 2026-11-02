@@ -99,6 +99,12 @@
                     <span>Activity Report</span></a>
             </li>
 
+            <li class="nav-item" id="mn-annual">
+                <a class="nav-link" href="{{ route('user.report.annual') }}">
+                    <i class="fas fa-fw fa-chart-bar"></i>
+                    <span>Annual Report</span></a>
+            </li>
+
             <li class="nav-item" id="mn4">
                 <a class="nav-link" href="{{ route('user.logs') }}">
                     <i class="fas fa-fw fa-cog"></i>

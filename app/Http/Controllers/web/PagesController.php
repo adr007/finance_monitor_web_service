@@ -131,6 +131,85 @@ class PagesController extends Controller
         return view('app.transaction', $data);
     }
 
+    public function annualReport()
+    {
+        $user = Auth::user();
+        $tahun = $_GET['tahun'] ?? date('Y');
+        $isAll = $tahun === 'all';
+        $tahun = $isAll ? $tahun : (int) $tahun;
+
+        $firstDate = Transaction::where('trans_id_user', $user->user_id)->min('trans_date');
+        $data['firstYear'] = $firstDate ? (int) date('Y', strtotime($firstDate)) : (int) date('Y');
+        $data['pilih_tahun'] = $isAll ? 'all' : (int) $tahun;
+        $data['isAll'] = $isAll;
+
+        $base = function () use ($user, $isAll, $tahun) {
+            $q = Transaction::where('trans_id_user', $user->user_id);
+            if (!$isAll) {
+                $q->whereYear('trans_date', $tahun);
+            }
+            return $q;
+        };
+
+        // Income & spending per period: months of the selected year, or every year for all time
+        $periodExpr = $isAll ? 'YEAR(trans_date)' : 'MONTH(trans_date)';
+        $rows = $base()
+            ->selectRaw("$periodExpr as period, trans_status, SUM(trans_value) as total, COUNT(*) as cnt")
+            ->groupBy('period', 'trans_status')
+            ->get();
+
+        if ($isAll) {
+            $lastYear = max($data['firstYear'], (int) date('Y'));
+            $periodKeys = range($data['firstYear'], $lastYear);
+        } else {
+            $periodKeys = range(1, 12);
+        }
+
+        $periods = [];
+        foreach ($periodKeys as $key) {
+            $periods[$key] = [
+                'key' => $key,
+                'label' => $isAll ? (string) $key : date('M', mktime(0, 0, 0, $key, 1)),
+                'income' => 0,
+                'spending' => 0,
+                'count' => 0,
+            ];
+        }
+        foreach ($rows as $row) {
+            if (!isset($periods[$row->period])) {
+                continue;
+            }
+            $field = $row->trans_status == 'UP' ? 'income' : 'spending';
+            $periods[$row->period][$field] += (float) $row->total;
+            $periods[$row->period]['count'] += (int) $row->cnt;
+        }
+        $data['periods'] = array_values($periods);
+
+        $data['income'] = array_sum(array_column($data['periods'], 'income'));
+        $data['spending'] = array_sum(array_column($data['periods'], 'spending'));
+        $data['transCount'] = array_sum(array_column($data['periods'], 'count'));
+
+        // Spending per category
+        $tagNames = Tag::pluck('tag_name', 'tag_kode');
+        $data['categories'] = $base()
+            ->where('trans_status', 'DOWN')
+            ->selectRaw('trans_tag, SUM(trans_value) as total')
+            ->groupBy('trans_tag')
+            ->orderByDesc('total')
+            ->get()
+            ->map(fn($r) => ['name' => $tagNames[$r->trans_tag] ?? 'Untagged', 'value' => (float) $r->total])
+            ->values();
+
+        $data['topExpenses'] = $base()
+            ->where('trans_status', 'DOWN')
+            ->with('tag')
+            ->orderByDesc('trans_value')
+            ->limit(10)
+            ->get();
+
+        return view('app.annual_report', $data);
+    }
+
     public function transaction($bulan = null)
     {
         $user = Auth::user();
